@@ -1,37 +1,100 @@
-Sequence Detector (Mealy Machine)
+Problem 1 — Mealy Sequence Detector (Pattern: 1101, Overlapping)
+State Diagram
 
-This project implements a Mealy Sequence Detector in Verilog that detects the sequence 1101.
-It outputs a high pulse (y = 1) whenever the input stream contains the sequence 1101 (with support for overlapping sequences).
+![alt text](Waves/State_diagram.jpg)
 
-📂 Files
+State Descriptions
 
-seq_detect_mealy.v → Verilog code for the sequence detector
+S0 → No bits matched yet
 
-tb_seq_detect_mealy.v → Testbench for simulation
+S1 → Detected 1
 
-dump.vcd → Waveform output file (generated after running simulation)
+S2 → Detected 11
 
-⚙️ How It Works
+S3 → Detected 110
 
-Input:
+From S3, if x=1, then output y=1 for one clock cycle and transition to S1 (to allow overlapping detection).
 
-clk → Clock signal
+Design Specifications
 
-reset → Active-high reset
+FSM Type: Mealy (output depends on both state and input)
 
-x → Serial input (1 bit per clock cycle)
+Target Pattern: 1101 (with overlapping detection enabled)
+
+Reset: Active-high, synchronous
 
 Output:
 
-y → Goes high (1) for one clock cycle when 1101 is detected
+y pulses high for one cycle each time the pattern 1101 is detected
 
-Implementation style:
+Repository Structure
 
-Mealy FSM
+problem1_seqdet/
+seq_detect_mealy.v     # FSM RTL design
+tb_seq_detect_mealy.v  # Testbench
+README.md              # Documentation
 
-Four states internally (S0, S1, S2, S3)
+waves/
+state_diagram.png  # FSM diagram
+waveform.png       # GTKWave simulation output
 
-Supports overlapping detection (e.g., input 1101101 detects twice).
+How to Compile and Run (Icarus Verilog + GTKWave)
 
-▶️ Simulation
-1. Install Icarus Verilog and GTKWave
+Inside the problem1_seqdet/ folder:
+
+Step 1: Compile
+iverilog -o sim.out tb_seq_detect_mealy.v seq_detect_mealy.v
+
+Step 2: Run Simulation
+vvp sim.out
+step 3: View Waveform
+gtkwave dump.vcd
+
+Testbench Details
+
+Clock period = 10 ns (#5 clk = ~clk;)
+
+Reset is asserted during the first few cycles
+
+Input stream applied:
+1 1 0 1 1 0 1 1 1 0 1
+
+Simulation results dumped into dump.vcd for GTKWave visualization
+
+Expected Output Behavior
+
+For the input sequence 11011011101:
+
+Pattern 1101 is detected at positions: 4, 7, 11 (1-based indexing).
+
+At each detection, y=1 for one clock cycle.
+
+Expected Output Table
+
+| Cycle | Input (x) | dbg\_state | Output (y) |
+| ----- | --------- | ---------- | ---------- |
+| 1     | 1         | S1         | 0          |
+| 2     | 1         | S2         | 0          |
+| 3     | 0         | S3         | 0          |
+| 4     | 1         | S1         | 1          |
+| 5     | 1         | S2         | 0          |
+| 6     | 0         | S3         | 0          |
+| 7     | 1         | S1         | 1          |
+| 8     | 1         | S2         | 0          |
+| 9     | 1         | S2         | 0          |
+| 10    | 0         | S3         | 0          |
+| 11    | 1         | S1         | 1          |
+
+Simulation Waveform
+
+The GTKWave output shows:
+
+clk → system clock
+
+reset → synchronous active-high reset
+
+x → input data stream
+
+y → pulse when sequence 1101 is detected
+
+dbg_state → FSM state transitions
