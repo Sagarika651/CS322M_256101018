@@ -1,4 +1,5 @@
 Problem 1 — Mealy Sequence Detector (Pattern: 1101, Overlapping)
+
 State Diagram
 
 ![alt text](Waves/State_diagram.jpg)
