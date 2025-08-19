@@ -90,12 +90,12 @@ Simulation Waveform
 
 The GTKWave output shows:
 
-clk → system clock
+clk - system clock
 
-reset → synchronous active-high reset
+reset - synchronous active-high reset
 
-x → input data stream
+x - input data stream
 
-y → pulse when sequence 1101 is detected
+y - pulse when sequence 1101 is detected
 
-dbg_state → FSM state transitions
+dbg_state - FSM state transitions
