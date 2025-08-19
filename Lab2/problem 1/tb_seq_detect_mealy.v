@@ -3,32 +3,24 @@ module tb_seq_detect_mealy;
     reg clk, reset, x;
     wire y;
 
-    seq_detect_mealy dut(.clk(clk), .reset(reset), .x(x), .y(y));
-
-    always #5 clk = ~clk;   // clock generation
-
-    initial begin
-        clk = 0; reset = 1; x = 0;
-        #12 reset = 0;
-
-        // Test input sequence: 11011011101
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 0;
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 0;
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 1;
-        @(posedge clk) x = 0;
-        @(posedge clk) x = 1;
-
-        #30 $finish;
-    end
+    seq_detect_mealy dut(clk, reset, x, y);
 
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, tb_seq_detect_mealy);
-        $monitor("Time=%0t | x=%b | y=%b", $time, x, y);
+
+        clk = 0;
+        forever #5 clk = ~clk; // 10ns clock period
+    end
+
+    initial begin
+        reset = 1; x = 0;
+        #12 reset = 0;
+
+        // Pattern: 11011011101
+        #10 x=1; #10 x=1; #10 x=0; #10 x=1;
+        #10 x=1; #10 x=0; #10 x=1; #10 x=1;
+        #10 x=1; #10 x=0; #10 x=1;
+        #20 $finish;
     end
 endmodule
